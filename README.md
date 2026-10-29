@@ -1,16 +1,41 @@
-# Descargador de vídeos (PC + Android)
+# Descargador de vídeos y música (PC + Android)
 
-Dos apps con el mismo motor, **yt-dlp**: soporta más de 1.700 webs (YouTube, Vimeo, X, Instagram, TikTok, webs de noticias, cursos…).
+Tres apps con el mismo motor, **yt-dlp**: soporta más de 1.700 webs (YouTube, Vimeo, X, Instagram, TikTok, SoundCloud, webs de noticias, cursos…).
 Si yt-dlp no reconoce una web, entra un **plan B**: busca en el HTML enlaces directos `.m3u8` / `.mp4` / `.webm` / `.mpd` (en `<video>` o en el JSON del reproductor) y los descarga con el *Referer* correcto.
 
 **Lo que no hace:** contenido con DRM (Netflix, Prime, Disney+, Movistar+, Filmin…). Se detecta y se avisa.
 Ojo también con los términos de uso de cada web (YouTube, por ejemplo, no permite descargar fuera de su app).
 
 ```
-pc/        App de escritorio (Python + Tkinter). Windows, y también Linux/macOS.
-android/   App Android (Kotlin + Jetpack Compose + youtubedl-android).
-.github/   Workflow que compila el .exe y los APK en GitHub, sin instalar nada.
+pc/              Vídeo · app de escritorio (Python + Tkinter). Windows, y también Linux/macOS.
+android/         Vídeo · app Android (Kotlin + Jetpack Compose + youtubedl-android).
+android-musica/  Música · app Android solo de audio (ver más abajo).
+.github/         Workflow que compila el .exe y los APK en GitHub, sin instalar nada.
 ```
+
+---
+
+## Música (Android)
+
+App aparte, **"Música"** (en Compartir aparece como **"Descargar música"**), que saca solo el audio, bien etiquetado:
+
+- **De cualquier web que soporte yt-dlp:** YouTube y YouTube Music, TikTok, X/Twitter, Instagram, SoundCloud, Bandcamp, Facebook, Twitch… Y si no la reconoce, busca enlaces de audio directos en la página.
+- **Spotify, Apple Music, Deezer, Tidal, Shazam, Amazon Music:** su música va con DRM, así que la app lee el título y el artista del enlace y **busca esa canción en YouTube**. Solo funciona con canciones sueltas, no con álbumes ni listas, y en el log se ve qué ha buscado.
+- **Búsqueda por texto:** escribe "artista canción" y elige entre los resultados de YouTube. Si compartes un texto sin enlace, la app se abre y lo busca.
+- **Formatos:**
+  - *MP3 320* y *MP3 192*: se oyen en cualquier sitio (coche, altavoces…).
+  - *M4A*: AAC sin recodificar cuando la web lo da; YouTube sí lo da.
+  - *Original*: el audio tal cual llega, sin pérdida extra (en YouTube, Opus).
+  - Ojo: YouTube sirve unos 130-160 kbps, así que un MP3 320 no suena mejor que el M4A, solo ocupa más.
+- **Etiquetas:**
+  - artista y título (saca el artista de títulos tipo "Artista - Canción" y quita "(Official Video)", "[Lyrics]", etc.);
+  - **carátula cuadrada** recortada de la miniatura;
+  - en listas, álbum = nombre de la lista y número de pista.
+- **Listas completas:** marca "Lista completa" y comparte una lista o un álbum. Se guarda en una subcarpeta con las pistas numeradas (`01 - Artista - Canción.mp3`…).
+- **Quitar intros (YouTube):** con SponsorBlock recorta las partes sin música de los videoclips (intros, diálogos). Si su servidor no responde, la canción se guarda entera y la app lo avisa.
+- Al terminar, **Escuchar** y **Compartir** desde la propia app. La notificación muestra el progreso, con "canción 3 de 12" en las listas.
+
+Se compila igual que la de vídeo: el workflow genera el artefacto **DescargadorMusica-Android**. Instala `app-arm64-v8a-release.apk` y elige como carpeta de destino *Music* (o la que quieras) la primera vez.
 
 ---
 

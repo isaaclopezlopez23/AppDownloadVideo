@@ -1,0 +1,4 @@
+<resources>
+    <style name="Tema" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Tema.Transparente" parent="android:Theme.Translucent.NoTitleBar" />
+</resources>
