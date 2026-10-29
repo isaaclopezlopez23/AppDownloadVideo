@@ -1,0 +1,16 @@
+# PC
+pc/.venv/
+pc/tools/
+pc/build/
+pc/dist/
+pc/*.spec
+__pycache__/
+
+# Android
+android/.gradle/
+android/.idea/
+android/build/
+android/app/build/
+android/local.properties
+*.jks
+*.keystore

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lienzo 108x108; la zona segura del icono adaptativo es el círculo central de 66 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,30h8v20h9L54,64 41,50h9Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M37,68h34v6H37Z" />
+</vector>

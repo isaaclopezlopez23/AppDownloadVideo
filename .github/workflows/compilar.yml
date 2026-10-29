@@ -1,0 +1,61 @@
+# Compila las dos apps en GitHub sin instalar nada en tu PC.
+# Uso: sube este proyecto a un repo de GitHub → pestaña "Actions" → "Compilar apps" → "Run workflow".
+# Al terminar, descarga los artefactos (zip con el .exe y los APK) desde la propia ejecución.
+name: Compilar apps
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  windows:
+    name: Windows (.exe)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Compilar .exe
+        working-directory: pc
+        shell: cmd
+        run: compilar_exe.bat
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DescargadorVideos-Windows
+          path: pc/dist/DescargadorVideos/
+
+  android:
+    name: Android (.apk)
+    runs-on: ubuntu-latest
+    env:
+      # Firma propia opcional: crea estos secretos en Settings → Secrets → Actions
+      # para poder instalar versiones nuevas encima sin desinstalar.
+      TIENE_FIRMA: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gradle/actions/wrapper-validation@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Preparar firma
+        if: env.TIENE_FIRMA == 'true'
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+      - name: Compilar APK
+        working-directory: android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DescargadorVideos-Android
+          path: android/app/build/outputs/apk/release/*.apk

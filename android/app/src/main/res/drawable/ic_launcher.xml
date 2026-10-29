@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Icono para Android 7.x (sin iconos adaptativos): círculo con flecha de descarga -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path
+        android:fillColor="#0B57D0"
+        android:pathData="M24,2A22,22 0,1 1,24 46A22,22 0,1 1,24 2Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M21.5,11h5v12.5h5.5L24,32 16,23.5h5.5Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M14,34h20v3.5H14Z" />
+</vector>
