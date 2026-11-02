@@ -1,4 +1,4 @@
-# Compila las tres apps en GitHub sin instalar nada en tu PC.
+# Compila las apps en GitHub sin instalar nada en tu PC.
 # Uso: pestaña "Actions" → "Compilar apps" → "Run workflow".
 # Al terminar, descarga los artefactos (zip con el .exe y los APK) desde la propia ejecución.
 name: Compilar apps
@@ -39,6 +39,9 @@ jobs:
           - nombre: música
             carpeta: android-musica
             artefacto: DescargadorMusica-Android
+          - nombre: conversor
+            carpeta: android-conversor
+            artefacto: ConversorVideo-Android
     env:
       # Firma propia opcional: crea estos secretos en Settings → Secrets → Actions
       # para poder instalar versiones nuevas encima sin desinstalar.

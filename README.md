@@ -10,8 +10,33 @@ Ojo también con los términos de uso de cada web (YouTube, por ejemplo, no perm
 pc/              Vídeo · app de escritorio (Python + Tkinter). Windows, y también Linux/macOS.
 android/         Vídeo · app Android (Kotlin + Jetpack Compose + youtubedl-android).
 android-musica/  Música · app Android solo de audio (ver más abajo).
-.github/         Workflow que compila el .exe y los APK en GitHub, sin instalar nada.
+android-conversor/ Conversor · arregla el sonido y convierte vídeos en el propio móvil (ver más abajo).
+.github/         Workflows que compilan el .exe y los APK en GitHub, sin instalar nada.
 ```
+
+---
+
+## Conversor de vídeo (Android)
+
+App aparte, **"Conversor"**, que convierte vídeos en el propio móvil con ffmpeg, sin internet. Nació para un caso muy concreto: **vídeos que se ven pero no suenan** en un proyector o tele Android barata (Magcubic, TV box…). Esos aparatos no tienen licencia Dolby/DTS, así que el audio **AC3, E-AC3, DTS o TrueHD** sale mudo; con AAC suena en cualquier sitio.
+
+**Descarga directa del APK:** [Releases → conversor](https://github.com/isaaclopezlopez23/AppDownloadVideo/releases/tag/conversor). Instala `Conversor-arm64-v8a.apk`. Se recompila solo cada vez que cambia `android-conversor/`.
+
+Tres modos:
+
+- **Arreglar sonido** (el normal, rápido): el vídeo se copia tal cual y solo el audio incompatible pasa a AAC. El AAC/MP3 que ya hubiera se copia, y se conservan subtítulos, idiomas, pista por defecto, capítulos y fuentes. MKV sigue siendo MKV y MP4 sigue siendo MP4; el resto (AVI, TS, WebM…) sale en MKV. Una peli de 2 horas tarda unos minutos.
+- **MP4 compatible**: MP4 con H.264 + AAC para aparatos quisquillosos. Si el vídeo ya es H.264 se copia; si no (H.265 10 bits, VP9, Xvid…) se recodifica, con límite de resolución opcional (1080p/720p/480p, nunca amplía y respeta vídeos en vertical). Intenta primero el codificador por hardware del móvil y, si falla, repite solo por software.
+- **Solo audio (MP3)**: saca la pista principal.
+
+Detalles:
+
+- Elige vídeos con su propio explorador (memoria interna, tarjeta SD o pendrive por OTG), marca carpetas enteras con subcarpetas o ábrelos desde "Compartir / Abrir con" de otra app.
+- Botón ⓘ en cada vídeo: dice qué pistas tiene y si va a sonar en el proyector.
+- Si un vídeo ya es compatible, se salta y lo indica (se puede forzar).
+- El resultado va a una carpeta **Convertidos** junto al original, que no se toca. Si ahí no se puede escribir, a *Películas/Convertidos*.
+- La cola sigue con la pantalla apagada (servicio en primer plano con notificación y botón Cancelar). El registro anota cada fichero con hora, porcentaje, velocidad y tiempo restante, y un resumen final.
+- Pide **acceso a todos los archivos**: ffmpeg es un proceso aparte y necesita rutas reales.
+- ffmpeg 7.1 y ffprobe vienen de los paquetes de youtubedl-android (compilados con Termux); la app solo extrae lo necesario la primera vez.
 
 ---
 

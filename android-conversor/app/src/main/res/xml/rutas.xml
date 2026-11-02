@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Para abrir o compartir los vídeos convertidos con otras apps -->
+<paths>
+    <external-path name="interno" path="." />
+    <!-- Pendrives y tarjetas SD (/storage/XXXX-XXXX) -->
+    <root-path name="raiz" path="." />
+</paths>

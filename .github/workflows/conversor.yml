@@ -1,0 +1,77 @@
+# Compila el conversor de vídeo para Android cada vez que cambia su código y deja los APK
+# en la página de Releases del repo, para instalarlos directamente desde el móvil:
+# https://github.com/isaaclopezlopez23/AppDownloadVideo/releases/tag/conversor
+name: Conversor de vídeo (Android)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "android-conversor/**"
+      - ".github/workflows/conversor.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: conversor
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    name: Compilar y publicar APK
+    runs-on: ubuntu-latest
+    env:
+      # Firma propia opcional: crea estos secretos en Settings → Secrets → Actions
+      # para poder instalar versiones nuevas encima sin desinstalar.
+      TIENE_FIRMA: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: gradle/actions/wrapper-validation@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: gradle/actions/setup-gradle@v5
+      - name: Preparar firma
+        if: env.TIENE_FIRMA == 'true'
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+      - name: Compilar APK
+        working-directory: android-conversor
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --stacktrace
+      - name: Renombrar APK
+        working-directory: android-conversor/app/build/outputs/apk/release
+        run: |
+          for f in app-*-release.apk; do
+            abi="${f#app-}"; abi="${abi%-release.apk}"
+            mv "$f" "Conversor-$abi.apk"
+          done
+          ls -la
+      - uses: actions/upload-artifact@v6
+        with:
+          name: ConversorVideo-Android
+          path: android-conversor/app/build/outputs/apk/release/*.apk
+      - name: Publicar en Releases
+        working-directory: android-conversor/app/build/outputs/apk/release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete conversor --cleanup-tag --yes || true
+          gh release create conversor Conversor-*.apk \
+            --target "$GITHUB_SHA" \
+            --title "Conversor de vídeo (Android)" \
+            --latest=false \
+            --notes "Compilado automáticamente desde ${GITHUB_SHA::7}.
+
+          **Qué APK instalar:** \`Conversor-arm64-v8a.apk\` vale para casi cualquier móvil actual. \`Conversor-armeabi-v7a.apk\` es para móviles o proyectores Android antiguos de 32 bits.
+
+          Android avisará de que es una app de origen desconocido: pulsa *Instalar de todas formas*. Si ya tenías una versión anterior y no deja instalar encima, desinstálala primero."
